@@ -2,8 +2,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // ─── Constants ───
     const OLD_RATE_PER_100K = 350;
     const NEW_RATE_PER_100K = 380;
-    const EUR_CONVERSION_RATE = 0.95;
+    const FALLBACK_EUR_RATE = 0.95;
     const TAX_RATE = 0.30;
+
+    // Dynamic EUR conversion rate (will be fetched from API)
+    let eurConversionRate = FALLBACK_EUR_RATE;
+
+    // ─── Fetch Live EUR Rate ───
+    async function fetchEurRate() {
+        try {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            if (!response.ok) throw new Error('API request failed');
+            const data = await response.json();
+            if (data.rates && data.rates.EUR) {
+                eurConversionRate = data.rates.EUR;
+                console.log(`EUR rate updated: ${eurConversionRate}`);
+                // Recalculate if there's already a value entered
+                if (devexState.amount > 0) {
+                    updateDevexUI();
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to fetch EUR rate, using fallback:', FALLBACK_EUR_RATE);
+            eurConversionRate = FALLBACK_EUR_RATE;
+        }
+    }
+
+    // Fetch rate on load
+    fetchEurRate();
 
     // ─── DOM: DevEx ───
     const amountInput = document.getElementById('amount-input');
@@ -38,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabTax = document.getElementById('tab-tax');
     const appTitle = document.getElementById('app-title');
     const appSubtitle = document.getElementById('app-subtitle');
+
+    // ─── DOM: Modal ───
+    const infoBtn = document.getElementById('info-btn');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const modal = modalOverlay.querySelector('.modal');
 
     // ─── State ───
     let devexState = { mode: 'to-cash', amount: 0, currency: currencyToggle.checked ? 'USD' : 'EUR', rateType: rateToggle.checked ? 'new' : 'old' };
@@ -103,6 +135,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ─── Modal Functions ───
+    function openModal() {
+        modalOverlay.classList.add('active');
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        // Focus the close button for accessibility
+        setTimeout(() => modalClose.focus(), 100);
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        // Return focus to info button
+        infoBtn.focus();
+    }
+
+    // Modal event listeners
+    infoBtn.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+
+    // Close on overlay click (but not modal content)
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    // Trap focus within modal when open
+    modal.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+            const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
+    });
+
     // ─── Tab Switching ───
     function switchTab(newTab) {
         if (activeTab === newTab) return;
@@ -161,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rateBase = devexState.rateType === 'old' ? OLD_RATE_PER_100K : NEW_RATE_PER_100K;
         const sym = devexState.currency === 'USD' ? '$' : '€';
         let rate = rateBase;
-        if (devexState.currency === 'EUR') rate *= EUR_CONVERSION_RATE;
+        if (devexState.currency === 'EUR') rate *= eurConversionRate;
         rateInfoText.textContent = `${sym}${rate.toFixed(0)} / 100k`;
 
         calculateDevex();
@@ -170,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function calculateDevex() {
         const rateBase = devexState.rateType === 'old' ? OLD_RATE_PER_100K : NEW_RATE_PER_100K;
         let rate = rateBase;
-        if (devexState.currency === 'EUR') rate *= EUR_CONVERSION_RATE;
+        if (devexState.currency === 'EUR') rate *= eurConversionRate;
         const ratePer1 = rate / 100000;
 
         if (devexState.mode === 'to-cash') {
@@ -345,15 +429,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // ═══════════════════════════════════════════
     // ─── Copy to Clipboard ───
     // ═══════════════════════════════════════════
-    document.getElementById('devex-result-section').addEventListener('click', () => {
-        if (devexState.amount === 0) return;
-        copyToClipboard(resultDisplay.textContent);
-    });
+    function handleResultCopy(resultSection, display, stateAmount) {
+        resultSection.addEventListener('click', () => {
+            if (stateAmount() === 0) return;
+            copyToClipboard(display.textContent);
+        });
+        // Keyboard accessibility
+        resultSection.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && stateAmount() !== 0) {
+                e.preventDefault();
+                copyToClipboard(display.textContent);
+            }
+        });
+    }
 
-    document.getElementById('tax-result-section').addEventListener('click', () => {
-        if (taxState.amount === 0) return;
-        copyToClipboard(taxResultDisplay.textContent);
-    });
+    handleResultCopy(
+        document.getElementById('devex-result-section'),
+        resultDisplay,
+        () => devexState.amount
+    );
+
+    handleResultCopy(
+        document.getElementById('tax-result-section'),
+        taxResultDisplay,
+        () => taxState.amount
+    );
 
     // ═══════════════════════════════════════════
     // ─── Particle System ───

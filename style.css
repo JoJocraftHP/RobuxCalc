@@ -133,6 +133,219 @@ body {
     z-index: 0;
 }
 
+/* ─── Info Button ─── */
+.info-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(30, 34, 48, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: all 0.3s var(--easing);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.info-btn:hover {
+    background: rgba(0, 200, 122, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.info-btn:active {
+    transform: scale(0.95);
+}
+
+.info-btn svg {
+    pointer-events: none;
+}
+
+/* ─── Modal Overlay ─── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s var(--easing);
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ─── Modal ─── */
+.modal {
+    background: linear-gradient(145deg, rgba(22, 26, 38, 0.98), rgba(16, 19, 28, 0.95));
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s var(--easing);
+    text-align: center;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0) scale(1);
+}
+
+/* Modal glow effect */
+.modal::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 25px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--accent-color), transparent 50%, rgba(20, 140, 255, 0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s var(--easing);
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-close:active {
+    transform: scale(0.9);
+}
+
+.modal-close svg {
+    pointer-events: none;
+}
+
+.modal-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 200, 122, 0.15), rgba(0, 200, 122, 0.05));
+    border: 1px solid rgba(0, 200, 122, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--accent-color);
+}
+
+.modal h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffffff 30%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modal-description {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.modal-description strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.modal-credits {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-credits strong {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.modal-github-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s var(--easing);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0, 200, 122, 0.3);
+}
+
+.modal-github-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 200, 122, 0.4);
+}
+
+.modal-github-btn:active {
+    transform: translateY(0);
+}
+
+.modal-github-btn svg {
+    pointer-events: none;
+}
+
+.modal-disclaimer {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
 /* ─── Container ─── */
 .container {
     width: 100%;
@@ -499,6 +712,12 @@ input[type="text"]:focus~.input-ripple {
     transform: translateY(0px);
 }
 
+.clickable-result:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
 .result-label {
     color: var(--text-secondary);
     font-size: 0.72rem;
@@ -687,8 +906,34 @@ footer {
     text-align: center;
     color: var(--text-secondary);
     font-size: 0.72rem;
-    opacity: 0.4;
+    opacity: 0.6;
     font-weight: 500;
+}
+
+footer p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.footer-github {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.2s var(--easing);
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.footer-github:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.footer-github svg {
+    display: block;
 }
 
 /* ─── Result Pop Animation ─── */
@@ -736,6 +981,42 @@ footer {
     .toggle-switch-wrapper {
         width: 115px;
     }
+
+    .info-btn {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .modal {
+        padding: 24px 20px;
+        margin: 10px;
+        border-radius: 20px;
+    }
+
+    .modal h2 {
+        font-size: 1.3rem;
+    }
+
+    .modal-description {
+        font-size: 0.85rem;
+    }
+
+    .modal-github-btn {
+        padding: 12px 24px;
+        font-size: 0.85rem;
+    }
+
+    .modal-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .modal-icon svg {
+        width: 28px;
+        height: 28px;
+    }
 }
 
 /* Ensure clicks hit the button, not its children */
@@ -743,4 +1024,3 @@ footer {
 .tab-btn > * {
     pointer-events: none;
 }
-

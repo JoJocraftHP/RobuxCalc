@@ -4,11 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robux Calculators</title>
+    <title>Robux DevEx & Tax Calculator</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="The ultimate Robux DevEx and Tax Calculator. Calculate your developer exchange earnings and Roblox marketplace fees instantly. Supports USD/EUR.">
+    <meta name="keywords" content="Robux, DevEx, Calculator, Roblox, Tax, Developer Exchange, USD, EUR">
+    <meta name="author" content="JoJocraftHP">
+    <meta name="theme-color" content="#0a0c10">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Robux DevEx & Tax Calculator">
+    <meta property="og:description" content="Calculate your Robux earnings and tax fees instantly.">
+    <meta property="og:image" content="assets/preview.png">
+    <meta property="og:url" content="https://jojocrafthp.github.io/RobuxCalc/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Robux DevEx & Tax Calculator">
+    <meta name="twitter:description" content="Calculate your Robux earnings and tax fees instantly.">
+    <meta name="twitter:image" content="assets/preview.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -16,6 +47,49 @@
     <div class="bg-orb bg-orb-2"></div>
     <div class="bg-orb bg-orb-3"></div>
     <canvas id="particle-canvas"></canvas>
+
+    <!-- Info Button -->
+    <button class="info-btn" id="info-btn" aria-label="About this tool">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <path d="M12 17h.01" />
+        </svg>
+    </button>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+            <button class="modal-close" id="modal-close" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                </svg>
+            </div>
+            <h2 id="modal-title">About This Tool</h2>
+            <p class="modal-description">
+                This calculator helps Roblox creators estimate their <strong>DevEx (Developer Exchange)</strong>
+                earnings
+                and calculate the <strong>30% marketplace tax</strong> on item sales. Quickly convert between Robux
+                and real currency (USD/EUR) using the latest DevEx rates.
+            </p>
+            <div class="modal-credits">
+                <span>Created by</span>
+                <strong>JoJocraftHP</strong>
+            </div>
+            <p class="modal-disclaimer">Not affiliated with Roblox Corporation.</p>
+        </div>
+    </div>
 
     <main class="container">
         <header class="header-anim">
@@ -25,17 +99,17 @@
 
         <div class="calculator-card card-anim">
 
-            <!-- ═══ DevEx Calculator View ═══ -->
+            <!-- DevEx Calculator View -->
             <div class="calc-view active" id="view-devex">
                 <div class="mode-selector">
-                    <button class="mode-btn active" id="btn-to-cash">
+                    <button class="mode-btn active" id="btn-to-cash" aria-label="Convert Robux to Cash">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
                         <span>Robux to Cash</span>
                     </button>
-                    <button class="mode-btn" id="btn-to-robux">
+                    <button class="mode-btn" id="btn-to-robux" aria-label="Convert Cash to Robux">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="20" height="12" x="2" y="6" rx="2" />
@@ -59,7 +133,8 @@
                     <div class="toggle-item">
                         <span class="toggle-label">Currency</span>
                         <div class="toggle-switch-wrapper">
-                            <input type="checkbox" id="currency-toggle" class="toggle-checkbox" checked>
+                            <input type="checkbox" id="currency-toggle" class="toggle-checkbox" checked
+                                aria-label="Toggle between EUR and USD">
                             <label for="currency-toggle" class="toggle-switch">
                                 <span class="toggle-option left">EUR</span>
                                 <span class="toggle-option right">USD</span>
@@ -72,7 +147,8 @@
                             <div class="rate-info" id="rate-info-text">$380 / 100k</div>
                         </div>
                         <div class="toggle-switch-wrapper">
-                            <input type="checkbox" id="rate-toggle" class="toggle-checkbox" checked>
+                            <input type="checkbox" id="rate-toggle" class="toggle-checkbox" checked
+                                aria-label="Toggle between Old and New DevEx rate">
                             <label for="rate-toggle" class="toggle-switch">
                                 <span class="toggle-option left">Old</span>
                                 <span class="toggle-option right">New</span>
@@ -81,12 +157,13 @@
                     </div>
                 </div>
 
-                <div class="result-section clickable-result" id="devex-result-section" title="Click to copy">
+                <div class="result-section clickable-result" id="devex-result-section" title="Click to copy"
+                    role="button" tabindex="0" aria-label="Estimated earnings result, click to copy">
                     <div class="result-label" id="result-label">
                         <span id="result-label-text">Estimated Earnings</span>
                         <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <rect width="15" height="15" x="9" y="9" rx="2" ry="2" />
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                         </svg>
@@ -96,10 +173,10 @@
                 </div>
             </div>
 
-            <!-- ═══ After Tax Calculator View ═══ -->
+            <!-- After Tax Calculator View -->
             <div class="calc-view" id="view-tax">
                 <div class="mode-selector">
-                    <button class="mode-btn" id="btn-before-tax">
+                    <button class="mode-btn" id="btn-before-tax" aria-label="Calculate from buyer's perspective">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 2L11 13" />
@@ -107,7 +184,7 @@
                         </svg>
                         <span>Before Tax</span>
                     </button>
-                    <button class="mode-btn active" id="btn-after-tax">
+                    <button class="mode-btn active" id="btn-after-tax" aria-label="Calculate seller's desired amount">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
@@ -132,12 +209,13 @@
                     <span class="tax-info-text">Roblox marketplace commission</span>
                 </div>
 
-                <div class="result-section clickable-result" id="tax-result-section" title="Click to copy">
+                <div class="result-section clickable-result" id="tax-result-section" title="Click to copy" role="button"
+                    tabindex="0" aria-label="Tax calculation result, click to copy">
                     <div class="result-label" id="tax-result-label">
                         <span id="tax-result-label-text">You Need to Pay</span>
                         <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <rect width="15" height="15" x="9" y="9" rx="2" ry="2" />
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                         </svg>
@@ -158,20 +236,22 @@
             </div>
 
             <!-- Shared Copy Toast -->
-            <div class="copied-toast" id="copied-toast">Copied!</div>
+            <div class="copied-toast" id="copied-toast" role="alert" aria-live="polite">Copied!</div>
 
             <!-- Bottom Tab Switcher -->
             <div class="bottom-tabs">
-                <button class="tab-btn active" id="tab-devex">
+                <button class="tab-btn active" id="tab-devex" aria-label="Switch to DevEx Calculator">
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
                     DevEx Calc
                 </button>
-                <button class="tab-btn" id="tab-tax">
+                <button class="tab-btn" id="tab-tax" aria-label="Switch to Tax Calculator">
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
                         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                         <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none" />
                     </svg>
@@ -185,6 +265,11 @@
         </footer>
     </main>
     <script src="script.js"></script>
+
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "ae550b48b04f49948e35774686e0d6e5"}'></script>
+    <!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>
