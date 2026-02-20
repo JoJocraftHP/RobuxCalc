@@ -1020,7 +1020,7 @@ footer p {
 }
 
 /* Ensure clicks hit the button, not its children */
-.mode-btn > *,
-.tab-btn > * {
+.mode-btn>*,
+.tab-btn>* {
     pointer-events: none;
 }
